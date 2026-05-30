@@ -173,6 +173,27 @@ table.rt td:nth-child(2), table.rt td:nth-child(3), table.rt td:nth-child(4), ta
     </div>
   </div>
 
+  <!-- SECTION 3b: ตารางสรุปสำหรับกรอก -->
+  <div class="card" id="summary-table-card" style="display:none;">
+    <p class="card-title">ตารางสรุปข้อมูลการยก</p>
+    <div style="overflow-x:auto;">
+      <table id="summary-table" style="width:100%; border-collapse:collapse; font-size:13px; text-align:center;">
+        <thead>
+          <tr style="background:#f5f5f3;">
+            <th style="border:1px solid #ccc; padding:8px 10px; font-weight:600; font-size:12px;">น้ำหนัก<br><span style="font-weight:400; color:#888;">(ตัน)</span></th>
+            <th style="border:1px solid #ccc; padding:8px 10px; font-weight:600; font-size:12px;">ระยะห่าง<br><span style="font-weight:400; color:#888;">(เมตร)</span></th>
+            <th style="border:1px solid #ccc; padding:8px 10px; font-weight:600; font-size:12px;">ระยะบูม<br><span style="font-weight:400; color:#888;">(เมตร)</span></th>
+            <th style="border:1px solid #ccc; padding:8px 10px; font-weight:600; font-size:12px;">Capacity Rate<br><span style="font-weight:400; color:#888;">(%)</span></th>
+          </tr>
+        </thead>
+        <tbody id="summary-body">
+          <tr><td style="border:1px solid #ccc; padding:8px;" id="s-weight">—</td><td style="border:1px solid #ccc; padding:8px;" id="s-radius">—</td><td style="border:1px solid #ccc; padding:8px;" id="s-boom">—</td><td style="border:1px solid #ccc; padding:8px;" id="s-rate">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:11px; color:#aaa; margin-top:8px;">* Capacity Rate = น้ำหนักรวม ÷ Capacity จาก load chart × 100</p>
+  </div>
+
   <!-- SECTION 4: ตารางผลลัพธ์ทั้งหมด -->
   <div id="all-results">
     <div class="card">
@@ -227,6 +248,7 @@ function calc() {
     document.getElementById('total-field').value = '';
     document.getElementById('all-results').style.display = 'none';
     document.getElementById('selected-card').style.display = 'none';
+    document.getElementById('summary-table-card').style.display = 'none';
     document.getElementById('print-btn').style.display = 'none';
     return;
   }
@@ -291,6 +313,18 @@ function applySelection(boom, radius, total) {
   document.getElementById('selected-info').textContent =
     'เลือก: Boom ' + boomData.label + ' · Radius ' + radius + ' m · Capacity ' + capTon.toFixed(2) + ' ตัน';
   document.getElementById('selected-card').style.display = 'block';
+
+  // Fill summary table
+  document.getElementById('s-weight').textContent = total.toFixed(2);
+  document.getElementById('s-radius').textContent = radius;
+  document.getElementById('s-boom').textContent = boom;
+  const rateCell = document.getElementById('s-rate');
+  rateCell.textContent = rate.toFixed(2) + '%';
+  rateCell.style.fontWeight = '600';
+  if (rate < 75) { rateCell.style.color = '#2d7a3a'; rateCell.style.background = '#eaf3de'; }
+  else if (rate < 100) { rateCell.style.color = '#a05c00'; rateCell.style.background = '#faeeda'; }
+  else { rateCell.style.color = '#a32d2d'; rateCell.style.background = '#fcebeb'; }
+  document.getElementById('summary-table-card').style.display = 'block';
 }
 
 function renderResults(total) {
